@@ -35,8 +35,37 @@
     showMessage("<h2>Couldn't load Tableau</h2><p>The Tableau Embedding API failed to load from " + origin + ".</p>");
   document.head.appendChild(script);
 
-  function render(index) {
+  // Tableau Cloud/Server dashboards need a token so viewers aren't asked to sign in.
+  // The token comes from api/tableau-token.js. Tableau Public needs no token.
+  async function getToken() {
+    if (origin === "https://public.tableau.com") return null;
+    try {
+      const res = await fetch("/api/tableau-token", { cache: "no-store" });
+      const data = await res.json();
+      if (!res.ok || !data.token) {
+        console.warn("Tableau token not available:", data.error || res.status);
+        return null;
+      }
+      return data.token;
+    } catch (err) {
+      console.warn("Tableau token request failed:", err);
+      return null;
+    }
+  }
+
+  let renderCount = 0;
+
+  async function render(index) {
     const d = dashboards[index];
+    const thisRender = ++renderCount;
+
+    [...tabsEl.children].forEach((btn, i) => btn.setAttribute("aria-current", i === index ? "page" : "false"));
+    history.replaceState(null, "", "#" + encodeURIComponent(d.name));
+
+    // Each token works once, so fetch a fresh one every time a dashboard is shown.
+    const token = await getToken();
+    if (thisRender !== renderCount) return; // a newer tab click took over
+
     container.innerHTML = "";
     const viz = document.createElement("tableau-viz");
     viz.setAttribute("src", d.url);
@@ -44,10 +73,8 @@
     viz.setAttribute("height", d.height ? d.height + "px" : "100%");
     viz.setAttribute("toolbar", cfg.toolbar || "bottom");
     if (cfg.hideTabs !== false) viz.setAttribute("hide-tabs", "");
+    if (token) viz.setAttribute("token", token);
     container.appendChild(viz);
-
-    [...tabsEl.children].forEach((btn, i) => btn.setAttribute("aria-current", i === index ? "page" : "false"));
-    history.replaceState(null, "", "#" + encodeURIComponent(d.name));
   }
 
   if (dashboards.length > 1) {
