@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="brand">
+      <h1 id="site-title">Dashboard</h1>
+      <p id="site-subtitle"></p>
+    </div>
+    <nav id="tabs" class="tabs" aria-label="Dashboards"></nav>
+  </header>
+
+  <main class="viz-wrap">
+    <div id="viz-container" class="viz-container"></div>
+    <div id="message" class="message" hidden></div>
+  </main>
+
+  <footer class="site-footer">
+    <span>Data visualized with Tableau</span>
+  </footer>
+
+  <script src="config.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
