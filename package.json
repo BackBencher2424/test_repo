@@ -1,0 +1,7 @@
+{
+  "name": "tableau-dashboard-site",
+  "private": true,
+  "dependencies": {
+    "jsonwebtoken": "^9.0.2"
+  }
+}
